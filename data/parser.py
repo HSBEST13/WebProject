@@ -2,16 +2,19 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def news_parser():
-    page = requests.get("https://rg.ru/tema/obshestvo/ekologija/")
+def news_parser() -> {}:
+    page = requests.get("https://ria.ru/eco/")
     soup = BeautifulSoup(page.text, "html.parser")
-    all_news = soup.findAll("a", class_="b-link b-link_title", href=True)
+    all_news = soup.findAll("a", class_="list-item__title color-font-hover-only", href=True)
+    sl = {}
     for data in all_news:
         name_of_new, link = data.text, data["href"]
         one_time_page = requests.get(link)
         one_time_soup = BeautifulSoup(one_time_page.text, "html.parser")
-        one_time_parser = one_time_soup.findAll("div", class_="b-material-wrapper__text")
-        print(one_time_parser)
-
-
-news_parser()
+        one_time_parser = one_time_soup.findAll("div", class_="article__text")
+        text = ""
+        for one_time_data in one_time_parser:
+            text += one_time_data.text + " "
+        sl[data.text] = text
+    print(sl)
+    return sl

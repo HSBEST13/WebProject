@@ -3,6 +3,14 @@ from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 blue, white, green, red = VkKeyboardColor.PRIMARY, VkKeyboardColor.SECONDARY, VkKeyboardColor.POSITIVE, \
                           VkKeyboardColor.NEGATIVE
 
+
+def generate_keyboard_link(user_id) -> VkKeyboard:
+    keyboard = VkKeyboard(inline=True)
+    keyboard.add_openlink_button("🔎 Перейти на сайт", link=f"https://hsbest.pythonanywhere.com/complaint/{user_id}")
+    keyboard.add_button("⁉ Мои жалобы", color=green)
+    return keyboard
+
+
 main_pass_keyboard = VkKeyboard(inline=True)
 main_pass_keyboard.add_button("✳ Сдать батарейки", color=green)
 main_pass_keyboard.add_line()
