@@ -36,8 +36,7 @@ class Db:
         print(result[0])
         return result[0][-1]
 
-    def check_user(self, user_id) -> bool:
+    def check_user(self, user_id) -> None:
         result = self.cur.execute(f"""SELECT * FROM users WHERE user_id = '{user_id}'""").fetchall()
         if len(result) == 0:
             self.init_user(user_id)
-        return False
