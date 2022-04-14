@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def news_parser() -> {}:
+def news_parser() -> dict:
     page = requests.get("https://ria.ru/eco/")
     soup = BeautifulSoup(page.text, "html.parser")
     all_news = soup.findAll("a", class_="list-item__title color-font-hover-only", href=True)
@@ -16,5 +16,4 @@ def news_parser() -> {}:
         for one_time_data in one_time_parser:
             text += one_time_data.text + " "
         sl[data.text] = text
-    print(sl)
     return sl

@@ -1,3 +1,4 @@
+import json
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 
 blue, white, green, red = VkKeyboardColor.PRIMARY, VkKeyboardColor.SECONDARY, VkKeyboardColor.POSITIVE, \
@@ -6,7 +7,9 @@ blue, white, green, red = VkKeyboardColor.PRIMARY, VkKeyboardColor.SECONDARY, Vk
 
 def generate_keyboard_link(user_id) -> VkKeyboard:
     keyboard = VkKeyboard(inline=True)
-    keyboard.add_openlink_button("🔎 Перейти на сайт", link=f"https://hsbest.pythonanywhere.com/complaint/{user_id}")
+    with open("data/config.json") as json_file:
+        config = json.loads(json_file.read())
+    keyboard.add_openlink_button("🔎 Перейти на сайт", link=f"{config['my-site']}/complaint/{user_id}")
     keyboard.add_button("⁉ Мои жалобы", color=green)
     return keyboard
 

@@ -1,4 +1,3 @@
-import json
 import random
 import requests
 from vk_api import VkApi
@@ -9,7 +8,7 @@ from vk_api.keyboard import VkKeyboard
 from vk_api.longpoll import VkLongPoll, VkEventType
 
 
-def select_best_location(lat1: float, lon1: float, array: list):
+def select_best_location(lat1: float, lon1: float, array: list) -> list:
     new_array = []
     for name, lat, lon, address in array:
         new_array.append([(abs(lat1 - lat) + abs(lon1 - lon)) / 2, name, address])
@@ -17,7 +16,7 @@ def select_best_location(lat1: float, lon1: float, array: list):
 
 
 class VkHandler:
-    def __init__(self):
+    def __init__(self) -> None:
         with open("data/config.json", "r") as config_file:
             self.config = json.loads(config_file.read())
         with open("data/quotes.txt", encoding="utf-8") as txt:
@@ -68,7 +67,7 @@ class VkHandler:
             "✳ Сдать металл": "metal",
         }
 
-    def update_news(self):
+    def update_news(self) -> dict:
         self.news = news_parser()
         self.locate_db.init_all_users()
 
@@ -133,12 +132,12 @@ class VkHandler:
                                 generate_keyboard_link(user_id=event.user_id).get_keyboard()
                             )
                         elif text == "⁉ Мои жалобы":
-                            response = requests.get(f"https://hsbest.pythonanywhere.com/"
+                            response = requests.get(f"{self.config['my-site']}/"
                                                     f"api/v2/get-complaints/{event.user_id}").json()
-                            print(response)
                             for i in response["complaints"]:
                                 self.writer(
                                     event.user_id,
-                                    f"Название жалобы: {i['name']}\nАдрес {i['address']}"
+                                    f"Название жалобы: {i['name']}\nАдрес {i['address']}",
+                                    keyboard=None
                                 )
 
