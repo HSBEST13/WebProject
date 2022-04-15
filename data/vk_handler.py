@@ -87,41 +87,43 @@ class VkHandler:
 
     def run(self) -> None:
         for event in self.longpoll.listen():
-            if event.type == VkEventType.MESSAGE_NEW:
-                if event.to_me:
-                    if event.text:
-                        text = event.text
-                    try:
-                        result = self.vk_session.method("messages.getById", {"message_ids": [event.message_id],
-                                                                             "group_id": 189072320})
-                        geolocation = result["items"][0]["geo"]["coordinates"]
-                        lat, lon = geolocation["latitude"], geolocation["longitude"]
-                        best_lat_lon, name, address = select_best_location(lat, lon,
-                                                                           self.locate_db.select_category(
-                                                                               self.categories.get(text)))
-                        self.writer(event.user_id,
-                                    f"🏠 Адрес: {address}\n🔎 Название "
-                                    f"организации: {name}\nИ помни:\n{random.choice(self.quotes)}",
-                                    main_keyboard.get_keyboard())
-                        text = ""
-                    except KeyError:
-                        pass
-                    try:
-                        self.functions.get(text)(event.user_id, self.messages.get(text), self.keyboards.get(text))
-                    except TypeError:
-                        if text == "✳ Жалоба":
-                            self.writer(
-                                event.user_id,
-                                "🔥 Жалоба оформляется на нашем сайте",
-                                generate_keyboard_link(user_id=event.user_id).get_keyboard()
-                            )
-                        elif text == "⁉ Мои жалобы":
-                            response = requests.get(f"{self.config['my-site']}/"
-                                                    f"api/v2/get-complaints/{event.user_id}").json()
-                            for i in response["complaints"]:
+            try:
+                if event.type == VkEventType.MESSAGE_NEW:
+                    if event.to_me:
+                        if event.text:
+                            text = event.text
+                        try:
+                            result = self.vk_session.method("messages.getById", {"message_ids": [event.message_id],
+                                                                                 "group_id": 189072320})
+                            geolocation = result["items"][0]["geo"]["coordinates"]
+                            lat, lon = geolocation["latitude"], geolocation["longitude"]
+                            best_lat_lon, name, address = select_best_location(lat, lon,
+                                                                               self.locate_db.select_category(
+                                                                                   self.categories.get(text)))
+                            self.writer(event.user_id,
+                                        f"🏠 Адрес: {address}\n🔎 Название "
+                                        f"организации: {name}\nИ помни:\n{random.choice(self.quotes)}",
+                                        main_keyboard.get_keyboard())
+                            text = ""
+                        except KeyError:
+                            pass
+                        try:
+                            self.functions.get(text)(event.user_id, self.messages.get(text), self.keyboards.get(text))
+                        except TypeError:
+                            if text == "✳ Жалоба":
                                 self.writer(
                                     event.user_id,
-                                    f"📩 Название жалобы: {i['name']}\n🌐 Адрес: {i['address']}",
-                                    keyboard=None
+                                    "🔥 Жалоба оформляется на нашем сайте",
+                                    generate_keyboard_link(user_id=event.user_id).get_keyboard()
                                 )
-
+                            elif text == "⁉ Мои жалобы":
+                                response = requests.get(f"{self.config['my-site']}/"
+                                                        f"api/v2/get-complaints/{event.user_id}").json()
+                                for i in response["complaints"]:
+                                    self.writer(
+                                        event.user_id,
+                                        f"📩 Название жалобы: {i['name']}\n🌐 Адрес: {i['address']}",
+                                        keyboard=None
+                                    )
+            except Exception as error:
+                print(f"Some error in program: {error.__class__.__name__}")

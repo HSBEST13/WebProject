@@ -1,5 +1,4 @@
 import json
-from data.news_config import news_config
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 
 blue, white, green, red = VkKeyboardColor.PRIMARY, VkKeyboardColor.SECONDARY, VkKeyboardColor.POSITIVE, \
