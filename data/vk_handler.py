@@ -46,7 +46,7 @@ class VkHandler:
             "✳ Сдать металл": "📩 Отлично, осталось только поделится своим местоположением",
             "📜 Главное меню": "🏚 Главное меню",
             "✳ Сдать мусор": "⁉ Вот какой мусор мы вам можем помочь сдать",
-            "✳ Эко - новости": "🔥 Раздел временно не работает из-за проблем с библиотеками",
+            "✳ Эко - новости": "🔥 Подборка лучших сайтов, чтобы узнать эко - новости",
         }
         self.functions = {
             "Начать": self.writer,
@@ -81,7 +81,7 @@ class VkHandler:
     def writer(self, user_id: str or int, message: str, keyboard: VkKeyboard or None) -> None:
         self.vk.messages.send(user_id=user_id,
                               message=message,
-                              random_id=0,
+                              random_id=random.randint(0, 2147000000),
                               keyboard=keyboard)
         self.locate_db.check_user(user_id)
 
@@ -109,23 +109,7 @@ class VkHandler:
                     try:
                         self.functions.get(text)(event.user_id, self.messages.get(text), self.keyboards.get(text))
                     except TypeError:
-                        if text == "⬅ Предыдущая новость":
-                            new = self.get_new_by_index(self.locate_db.get_index(event.user_id))
-                            self.writer(
-                                event.user_id,
-                                f"{new[0]}\n\n{new[-1]}",
-                                list_keyboard.get_keyboard()
-                            )
-                            self.locate_db.set_user_index(event.user_id, -1)
-                        elif text == "Следующая новость ➡":
-                            new = self.get_new_by_index(self.locate_db.get_index(event.user_id))
-                            self.writer(
-                                event.user_id,
-                                f"{new[0]}\n\n{new[-1]}",
-                                list_keyboard.get_keyboard()
-                            )
-                            self.locate_db.set_user_index(event.user_id, 1)
-                        elif text == "✳ Жалоба":
+                        if text == "✳ Жалоба":
                             self.writer(
                                 event.user_id,
                                 "🔥 Жалоба оформляется на нашем сайте",
@@ -137,7 +121,7 @@ class VkHandler:
                             for i in response["complaints"]:
                                 self.writer(
                                     event.user_id,
-                                    f"Название жалобы: {i['name']}\nАдрес {i['address']}",
+                                    f"📩 Название жалобы: {i['name']}\n🌐 Адрес: {i['address']}",
                                     keyboard=None
                                 )
 
